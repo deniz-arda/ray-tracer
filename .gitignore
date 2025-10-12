@@ -1,0 +1,27 @@
+﻿# Build directories
+build/
+cmake-build-*/
+bin/
+obj/
+
+# Compiled files
+*.o
+*.out
+*.exe
+raytracer
+a.out
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Backup files
+*~
+*.bak
