@@ -7,9 +7,6 @@
 #include <omp.h>
 #include <chrono>
 
-//==============================================================================
-// IMPROVED VERSION - Key Optimizations for Discussion
-//==============================================================================
 
 // 3D vector structure (same as original, but with additional utilities)
 struct Vec3 {
@@ -60,9 +57,7 @@ struct Material {
         : color(c), ambient(amb), diffuse(diff), specular(spec), shininess(shin), reflectivity(refl) {}
 };
 
-//==============================================================================
-// OPTIMIZATION 1: Optimized Ray-Sphere Intersection
-//==============================================================================
+
 // Improvement: Assumes normalized ray direction (a = 1), uses b/2 optimization
 struct Sphere {
     Vec3 center;
@@ -119,9 +114,7 @@ struct Light {
         : position(p), color(c), intensity(i) {}
 };
 
-//==============================================================================
 // OPTIMIZATION 2: Separate shadow ray intersection with early exit
-//==============================================================================
 class Scene {
 public:
     std::vector<Sphere> spheres;
@@ -160,9 +153,7 @@ public:
         return false;  // No occlusion
     }
     
-    //==========================================================================
     // OPTIMIZATION 3: Energy-conserving reflections
-    //==========================================================================
     Color trace(const Ray& ray, int depth = 0) const {
         if (depth > 3) return background;
         
@@ -256,9 +247,7 @@ public:
     }
 };
 
-//==============================================================================
 // OPTIMIZATION 4: Better scheduling with guided instead of dynamic
-//==============================================================================
 class Renderer {
 private:
     SDL_Window* window;
@@ -384,25 +373,23 @@ public:
 
 int main(int argc, char* argv[]) {
     Scene scene;
-     // Sweet, saturated colors
-    Material bubblegum(Color(1.0, 0.4, 0.7), 0.2, 0.7, 0.6, 64, 0.3);
-    Material lemon(Color(1.0, 1.0, 0.3), 0.2, 0.7, 0.5, 64, 0.3);
-    Material mint(Color(0.4, 1.0, 0.7), 0.2, 0.7, 0.5, 64, 0.3);
-    Material grape(Color(0.6, 0.3, 1.0), 0.2, 0.7, 0.6, 64, 0.3);
-    Material orange(Color(1.0, 0.6, 0.2), 0.2, 0.7, 0.5, 64, 0.3);
-    Material cream(Color(1.0, 0.95, 0.85), 0.3, 0.6, 0.3, 32, 0.2);
+     // Define materials
+    Material red(Color(1.0, 0.2, 0.2), 0.1, 0.7, 0.8, 64, 0.4);
+    Material green(Color(0.2, 1.0, 0.2), 0.1, 0.8, 0.6, 32, 0.2);
+    Material blue(Color(0.2, 0.2, 1.0), 0.1, 0.6, 0.9, 128, 0.6);
+    Material gold(Color(1.0, 0.84, 0.0), 0.2, 0.5, 1.0, 256, 0.5);
+    Material silver(Color(0.75, 0.75, 0.75), 0.1, 0.4, 1.0, 256, 0.8);
     
-    // Pile of candy spheres
-    scene.addSphere(Sphere(Vec3(0, 0, 0), 1.0, bubblegum));
-    scene.addSphere(Sphere(Vec3(-1.8, -0.3, 0.8), 0.8, lemon));
-    scene.addSphere(Sphere(Vec3(1.8, -0.3, 0.8), 0.8, mint));
-    scene.addSphere(Sphere(Vec3(-0.8, 1.3, 1.2), 0.7, grape));
-    scene.addSphere(Sphere(Vec3(0.8, 1.3, 1.2), 0.7, orange));
-    scene.addSphere(Sphere(Vec3(0, -101, 0), 100, cream));
+    // Build scene geometry
+    scene.addSphere(Sphere(Vec3(0, 0, 0), 1.0, red));
+    scene.addSphere(Sphere(Vec3(-2.5, 0, -1), 0.8, green));
+    scene.addSphere(Sphere(Vec3(2.5, 0.5, -0.5), 1.2, blue));
+    scene.addSphere(Sphere(Vec3(0, -101, 0), 100, silver));
+    scene.addSphere(Sphere(Vec3(-1, 1.5, 1), 0.5, gold));
     
-    // Bright, cheerful lighting
-    scene.addLight(Light(Vec3(-5, 8, 5), Color(1, 1, 1), 1.0));
-    scene.addLight(Light(Vec3(5, 8, 5), Color(1, 1, 1), 1.0));
+    // Configure lighting
+    scene.addLight(Light(Vec3(-5, 5, 5), Color(1, 1, 1), 0.8));
+    scene.addLight(Light(Vec3(5, 3, 3), Color(1, 1, 1), 0.6));
     // Setup camera
     Camera camera(Vec3(0, 1, 5), Vec3(0, 0, 0));
     
@@ -416,64 +403,3 @@ int main(int argc, char* argv[]) {
     
     return 0;
 }
-
-/*
-==============================================================================
-SUMMARY OF IMPROVEMENTS:
-==============================================================================
-
-1. OPTIMIZED RAY-SPHERE INTERSECTION
-   - Assumes normalized ray direction (a = 1)
-   - Uses b/2 optimization to reduce operations
-   - Added lengthSquared() to avoid sqrt in c calculation
-   - Result: ~15-20% faster intersection tests
-
-2. SHADOW RAY EARLY EXIT
-   - New intersectShadow() function
-   - Returns immediately on first hit (any-hit vs closest-hit)
-   - Calculates light distance to bound search
-   - Result: ~30% faster shadow rays
-
-3. ENERGY-CONSERVING REFLECTIONS
-   - Changed from: color + reflect * k
-   - To: color * (1-k) + reflect * k
-   - Fixes over-bright surfaces
-   - Physically accurate energy distribution
-
-4. GUIDED SCHEDULING
-   - Changed from: schedule(dynamic, 1)
-   - To: schedule(guided)
-   - Starts with large chunks, reduces over time
-   - Better load balancing with less overhead
-   - Result: ~5-10% overall speedup
-
-5. ADDED METRICS
-   - Throughput in Mrays/sec
-   - Better progress reporting
-   - Shows optimization benefits
-
-EXPECTED PERFORMANCE GAIN: ~25-35% faster overall
-(Varies based on scene complexity and thread count)
-
-==============================================================================
-DISCUSSION POINTS FOR INTERVIEW:
-==============================================================================
-
-1. Why these specific optimizations?
-   - Profiling showed intersection as bottleneck (70-80% of time)
-   - Shadow rays don't need closest hit
-   - Energy conservation fixes visual artifacts
-
-2. What's next?
-   - BVH for O(log n) vs O(n) intersection
-   - SIMD vectorization (AVX2/AVX-512)
-   - Structure-of-Arrays for better cache utilization
-   - GPU port using these same principles
-
-3. Hardware mapping:
-   - Early exit maps to GPU divergence (thread predication)
-   - Normalized direction saves ALU ops
-   - Guided scheduling similar to GPU warp scheduling
-
-==============================================================================
-*/
