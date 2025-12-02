@@ -1,4 +1,4 @@
-# Ray-Sphere Intersection Hardware Accelerator
+# Ray-tracer
 
 A hardware accelerator for ray-sphere intersection testing, implemented in SystemVerilog with a C++ software raytracer and Verilator testbench.
 
