@@ -1,8 +1,5 @@
-//==============================================================================
 // Verilator C++ Testbench for Ray-Sphere Intersection Accelerator
-//==============================================================================
 // This wrapper provides a simple C++ interface to the hardware accelerator
-//==============================================================================
 
 #include "Vray_sphere_intersect.h"
 #include "verilated.h"
@@ -107,12 +104,10 @@ public:
     }
 };
 
-//==============================================================================
-// Test functions
-//==============================================================================
+//Test functions
 
 void test_basic_intersection() {
-    std::cout << "\n=== Test 1: Basic Intersection ===" << std::endl;
+    std::cout << "\nTest 1: Basic Intersection" << std::endl;
     RaySphereAccelerator accel;
     
     // Ray from (0,0,5) towards origin
@@ -132,7 +127,7 @@ void test_basic_intersection() {
 }
 
 void test_miss() {
-    std::cout << "\n=== Test 2: Ray Miss ===" << std::endl;
+    std::cout << "\nTest 2: Ray Miss" << std::endl;
     RaySphereAccelerator accel;
     
     // Ray that misses sphere
@@ -149,7 +144,7 @@ void test_miss() {
 }
 
 void test_tangent() {
-    std::cout << "\n=== Test 3: Tangent Ray ===" << std::endl;
+    std::cout << "\nTest 3: Tangent Ray" << std::endl;
     RaySphereAccelerator accel;
     
     // Ray that grazes the sphere
@@ -169,7 +164,7 @@ void test_tangent() {
 }
 
 void test_inside_sphere() {
-    std::cout << "\n=== Test 4: Ray Origin Inside Sphere ===" << std::endl;
+    std::cout << "\nTest 4: Ray Origin Inside Sphere" << std::endl;
     RaySphereAccelerator accel;
     
     // Ray starting inside sphere
@@ -189,7 +184,7 @@ void test_inside_sphere() {
 }
 
 void compare_with_software() {
-    std::cout << "\n=== Test 5: Accuracy Comparison ===" << std::endl;
+    std::cout << "\nTest 5: Accuracy Comparison" << std::endl;
     RaySphereAccelerator accel;
     
     // Software implementation (from the raytracer)
@@ -277,16 +272,11 @@ void compare_with_software() {
     std::cout << "\nPassed: " << passed << "/" << total << std::endl;
 }
 
-//==============================================================================
-// Main
-//==============================================================================
 int main(int argc, char** argv) {
     Verilated::commandArgs(argc, argv);
-    
-    std::cout << "======================================" << std::endl;
+
     std::cout << "Ray-Sphere Intersection Accelerator" << std::endl;
     std::cout << "Hardware Testbench (Verilator)" << std::endl;
-    std::cout << "======================================" << std::endl;
     
     test_basic_intersection();
     test_miss();
@@ -294,7 +284,7 @@ int main(int argc, char** argv) {
     test_inside_sphere();
     compare_with_software();
     
-    std::cout << "\n=== All tests complete ===" << std::endl;
+    std::cout << "\nAll tests complete" << std::endl;
     
     return 0;
 }
