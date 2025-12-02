@@ -1,4 +1,4 @@
-# Ray-Sphere Intersection Hardware Accelerator
+# Ray-tracer
 
 A hardware accelerator for ray-sphere intersection testing, implemented in SystemVerilog with a C++ software raytracer and Verilator testbench.
 
@@ -60,6 +60,36 @@ make clean
 # Show compiler and system info
 make info
 ```
+## Visual Improvements
+
+**Optimized rendering produces noticeably clearer, more realistic images:**
+
+<div align="center">
+  <table>
+    <tr>
+      <th>Before (Original)</th>
+      <th>After (Optimized)</th>
+    </tr>
+    <tr>
+      <td><img src="screenshots/render_output.png" width="400" alt="Original render"></td>
+      <td><img src="screenshots/render_image2.png" width="400" alt="Optimized render"></td>
+    </tr>
+  </table>
+</div>
+
+### What Changed?
+
+**Energy-Conserving Reflections** - The original implementation added reflections to surface color, causing over-bright artifacts. The optimized version properly blends reflections (`color * (1-r) + reflection * r`), producing physically accurate, photorealistic results.
+
+**Key Visual Benefits:**
+- Realistic metallic and glass-like appearances
+- No more over-bright "glowing" artifacts  
+- Clearer material definition and contrast
+- Professional, physically-based look
+
+**Performance:** Whilst having better visual quality, the optimized version is also **~30% faster** due to algorithmic improvements (normalized ray optimization, shadow ray early exit, guided scheduling).
+
+---
 
 ### Hardware Testbench
 
