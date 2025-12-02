@@ -1,4 +1,3 @@
-// Ultra-simple ray-sphere intersection
 module ray_sphere_intersect (
     input  logic clk,
     input  logic rst_n,
